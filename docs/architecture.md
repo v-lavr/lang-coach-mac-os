@@ -88,6 +88,9 @@ When enabled, `POST /api/check` accepts `{ "text": "completed sentence" }` and r
 and `explanation`. The macOS client uses URLSession and gets its base URL and bearer
 token from settings. The token is sent as an `Authorization: Bearer <token>` header.
 
+The menu-bar action **Get grammar recommendations** requests `GET /api/recommendations`
+and displays the returned user-specific recommendations in a native panel.
+
 The bearer token is a development-only setting. Production authentication should use
 Google sign-in or another production authentication flow, with credentials stored in
 Keychain rather than UserDefaults.

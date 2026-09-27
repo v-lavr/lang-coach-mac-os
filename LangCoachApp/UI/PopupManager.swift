@@ -15,6 +15,54 @@ final class PopupManager {
         panel.center(); panel.makeKeyAndOrderFront(nil)
         self.panel = panel
     }
+
+    func show(recommendations: [GrammarRecommendation]) {
+        panel?.close()
+        let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 480, height: 420), styleMask: [.titled, .closable, .nonactivatingPanel], backing: .buffered, defer: false)
+        panel.title = "LangCoach recommendations"
+        panel.level = .floating
+        panel.isReleasedWhenClosed = false
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        panel.contentView = NSHostingView(rootView: RecommendationsPopup(recommendations: recommendations))
+        panel.center()
+        panel.makeKeyAndOrderFront(nil)
+        self.panel = panel
+    }
+}
+
+private struct RecommendationsPopup: View {
+    let recommendations: [GrammarRecommendation]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Grammar recommendations")
+                    .font(.headline)
+
+                if recommendations.isEmpty {
+                    Text("Write and correct more sentences to receive recommendations.")
+                        .foregroundStyle(.secondary)
+                }
+
+                ForEach(Array(recommendations.enumerated()), id: \.offset) { _, recommendation in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(recommendation.title)
+                            .fontWeight(.medium)
+                        Text(recommendation.explanation)
+                        Text("Practice: \(recommendation.practice)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        ForEach(Array(recommendation.examples.enumerated()), id: \.offset) { _, example in
+                            Text("• \(example)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+            .padding(18)
+        }
+    }
 }
 
 private struct CorrectionPopup: View {

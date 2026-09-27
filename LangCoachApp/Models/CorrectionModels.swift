@@ -15,3 +15,15 @@ struct CorrectionError: Codable, Sendable {
     let replacement: String
     let explanation: String
 }
+
+struct RecommendationResponse: Codable, Sendable {
+    let recommendations: [GrammarRecommendation]
+}
+
+struct GrammarRecommendation: Codable, Sendable {
+    let type: String
+    let title: String
+    let explanation: String
+    let practice: String
+    let examples: [String]
+}

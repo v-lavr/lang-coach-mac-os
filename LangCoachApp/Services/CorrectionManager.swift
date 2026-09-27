@@ -14,6 +14,7 @@ final class CorrectionManager {
     private var lastSubmittedSentence = ""
     private var hasLoggedUnavailableFocusedField = false
     private(set) var correctionsToday = 0
+    private(set) var isLoadingRecommendations = false
     var isEnabled: Bool { settings.correctionsEnabled }
     var accessibilityGranted: Bool { accessibility.hasPermission }
     init() {
@@ -27,6 +28,25 @@ final class CorrectionManager {
         }
     }
     func requestAccessibilityPermission() { accessibility.requestPermission() }
+    func loadRecommendations() {
+        guard !isLoadingRecommendations else { return }
+        isLoadingRecommendations = true
+
+        Task { [weak self] in
+            guard let self else { return }
+            defer { isLoadingRecommendations = false }
+
+            do {
+                let response = try await apiClient.recommendations(
+                    apiURL: settings.apiURL,
+                    bearerToken: settings.bearerToken
+                )
+                popupManager.show(recommendations: response.recommendations)
+            } catch {
+                print("LangCoach: recommendations failed: \(error.localizedDescription)")
+            }
+        }
+    }
     private func inspectFocusedField() {
         guard settings.correctionsEnabled else { return }
         guard accessibility.hasPermission else {

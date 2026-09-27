@@ -12,8 +12,9 @@ User types incorrect English
 → text is replaced
 → error is stored by the backend.
 
-The first implemented vertical slice stops after replacement. Statistics and
-recommendations remain later phases, as described by the development priority below.
+The first completed vertical slice stops after replacement. The menu bar also supports
+a manual recommendation request based on the user's saved corrections. Statistics UI
+and automatic recommendation delivery remain later phases.
 
 ## Security / Privacy
 

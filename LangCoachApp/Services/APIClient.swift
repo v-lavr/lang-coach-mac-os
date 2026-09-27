@@ -41,4 +41,34 @@ struct APIClient {
             throw APIClientError.invalidResponse
         }
     }
+
+    func recommendations(apiURL: String, bearerToken: String) async throws -> RecommendationResponse {
+        let baseURL = apiURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let url = URL(string: "\(baseURL)/api/recommendations") else {
+            throw APIClientError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let token = bearerToken.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !token.isEmpty {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIClientError.invalidResponse
+        }
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIClientError.serverStatus(httpResponse.statusCode)
+        }
+
+        do {
+            return try JSONDecoder().decode(RecommendationResponse.self, from: data)
+        } catch {
+            throw APIClientError.invalidResponse
+        }
+    }
 }
